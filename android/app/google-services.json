@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "718967128360",
+    "firebase_url": "https://act-im-dcf37.firebaseio.com",
+    "project_id": "act-im-dcf37",
+    "storage_bucket": "act-im-dcf37.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718967128360:android:7969916a0bbb33b495d01d",
+        "android_client_info": {
+          "package_name": "actoss.actim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718967128360-cfqdts20spclpbbhvsanba4jng1inadl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCz8LfciWnq0pFmG0WjlWN26OW9FNyaIH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718967128360-cfqdts20spclpbbhvsanba4jng1inadl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

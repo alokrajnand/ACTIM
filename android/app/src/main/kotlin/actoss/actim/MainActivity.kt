@@ -1,0 +1,6 @@
+package actoss.actim
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
