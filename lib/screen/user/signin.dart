@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
 class SigninScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _SigninScreenState extends State<SigninScreen> {
   String _password;
   String _role ;
   String _deviceToken;
+  bool _loading = false;
 
 ///Initialization Part
 FirebaseAuth _auth = FirebaseAuth.instance;
@@ -102,11 +104,13 @@ Future loginuser( String _emailaddress , String _password) async{
         } catch (e) {
                 var  message = 'An error occured while trying to send email verification';
                 setState(() {
+                   _loading = false;
                   _errorMsg = message;
                 });
         }
         var  message = 'Email is not varified an email has been sent please verify !!';
           setState(() {
+              _loading = false;
               _errorMsg = message;
           });
 
@@ -118,6 +122,7 @@ Future loginuser( String _emailaddress , String _password) async{
                   if (_role == 'User' ){
                         var  message = 'Your access previllages is not define. Please contact admin';
                         setState(() {
+                          _loading = false;
                           _errorMsg = message;
                         });
                   }else {
@@ -149,7 +154,9 @@ Future loginuser( String _emailaddress , String _password) async{
     } catch (e) {
         print(e.message);
         setState(() {
+         _loading = false;
         _errorMsg = e.message;
+        print('ok');
       });
     }
 }
@@ -255,7 +262,8 @@ Future loginuser( String _emailaddress , String _password) async{
                       )),
                   //submit button
                   SizedBox(height: 30),
-                  RaisedButton(
+
+                  _loading == false ? RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
@@ -274,9 +282,25 @@ Future loginuser( String _emailaddress , String _password) async{
                         return;
                       }
                       _formKey.currentState.save();
-                      loginuser(_emailaddress, _password);
+                      print(_loading);
+                      FocusScope.of(context).requestFocus(FocusNode());
+                              setState(() {_errorMsg = '';});
+                              setState(() {_loading = true;});
+                              loginuser(_emailaddress, _password);
+                      
                     },
-                  ),
+                  )
+                  : RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
+                      child: SpinKitThreeBounce(color: AppColors.PRIMARY_COLOR_DARK, size: 20.0,)
+                    ),
+                    onPressed: (){},
+                  )
+                  ,
                   SizedBox(height: 30),
                   FlatButton(
                     child: Text(

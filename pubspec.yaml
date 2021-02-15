@@ -38,6 +38,7 @@ dependencies:
   cloud_firestore: ^0.16.0
   firebase_messaging:
   flutter_launcher_icons:
+  flutter_spinkit: "^4.1.2"
 
 dev_dependencies:
   flutter_test:

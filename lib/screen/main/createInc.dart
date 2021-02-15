@@ -20,6 +20,7 @@ class _CreateIncScreenState extends State<CreateIncScreen> {
   bool _autovalidate = false;
   List _routeLink = List();
   String newValue;
+  QuerySnapshot _test;
   bool _success_ind = true;
 
 
@@ -32,6 +33,7 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
   void initState() {
     super.initState();
     getRoute();
+    //getRouteDetail();
    someMethod();
 
   }
@@ -45,12 +47,18 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // Get all the Route for the drop down
   Future getRoute() async {
-    //var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore.collection('links').get();
     setState(() {
       _routeLink = qn.docs;
     });
   }
+
+ Future getRouteDetail(link_id) async {
+   FirebaseFirestore firestore = FirebaseFirestore.instance;
+   QuerySnapshot qn = await firestore.collection('links').where('link_id', isEqualTo: link_id).get();
+    print(qn);
+ }
+
 
   ///Create a global key for the form
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -266,22 +274,38 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Widget _buildFormRouteDropDown() {
     return DropdownButtonFormField(
+      isDense: false,
+      itemHeight: 73,//what you need for height
       decoration: InputDecoration(
-          //enabledBorder: InputBorder.none,
-          //errorBorder: InputBorder.none,
-          border: const OutlineInputBorder()),
-      hint: Text('Please Select Route Link '), // Not necessary for Option 1
+          border: const OutlineInputBorder(),
+          labelText: _route_name,
+          //contentPadding: EdgeInsets.only(top: 25, bottom: 0, left: 10, right: 0),
+          //filled: true,
+          ),
+      
+      hint: Text('Please Select Route Link ', textAlign: TextAlign.left,), // Not necessary for Option 1
       value: _route_name,
+      
+      
       validator: (value) => value == null ? 'Please Select Route Link' : null,
       onChanged: (newValue) {
         setState(() {
-          _route_name = newValue;
+          _route_name = newValue;   
+          print(newValue);
         });
       },
-      items: _routeLink.map((list) {
-        return DropdownMenuItem(
-          child: Text(
-          list['link_id']),
+      items: _routeLink.map((list) {       
+        return DropdownMenuItem(   
+          
+            child: Column(
+              children: [
+                Text(list['link_id'],),
+                Text(list['link_start_point'] ,),
+                Text(list['link_end_point'] ,),
+                Divider(),
+              ],
+              
+                    ),
           value: list['link_id'] 
         );
       }).toList(),
@@ -386,6 +410,7 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
                   }
 
                   _formKey.currentState.save();
+                  getRouteDetail(_route_name);
                   _settingModalBottomSheet(context);
                 },
               ),

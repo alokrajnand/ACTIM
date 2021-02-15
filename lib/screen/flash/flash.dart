@@ -21,7 +21,7 @@ class _FlashScreenState extends State<FlashScreen> {
 /// Initialization 
 FirebaseAuth _auth = FirebaseAuth.instance;
 final storage = new FlutterSecureStorage();
-FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+//FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 
   ///navigation to home
@@ -42,18 +42,12 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   void initState() {
     super.initState();
     _chekLocalStorageData();
-    _getToken();
+
   }
 
-_getToken(){
-_firebaseMessaging.getToken().then((devicetoken) {
-    setState(() {
-       _deviceToken = devicetoken;            
-     });
-});
-}
-/// FCM CALL BACKS
 
+/// FCM CALL BACKS
+/*
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   if (message.containsKey('data')) {
     final dynamic data = message['data'];
@@ -79,7 +73,7 @@ _firebaseMessaging.configure(
       },
     );
 }
-*/
+*/ */
 
 //future to check the record in local storage and if true then paas true
 

@@ -9,4 +9,13 @@ class LinkService {
     return qn.docs;
 
   }
+
+  static Future getLink() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot qn = await firestore.collection('links').get();
+    return qn.docs;
+
+  }
+
+
 }

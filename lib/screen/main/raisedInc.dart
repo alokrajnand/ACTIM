@@ -1,4 +1,3 @@
-
 import 'package:actim/environment/theam.dart';
 import 'package:actim/screen/main/home.dart';
 import 'package:actim/screen/main/incdetail.dart';
@@ -270,7 +269,9 @@ Widget _validInvalid(incident_id){
           : IncService.getAllRaisedInc(),
           builder:(contaxt , snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting){
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(AppColors.PRIMARY_COLOR_DARK),
+              ));
             }else {
               return ListView.builder(
                 itemCount: snapshot.data.length,

@@ -135,7 +135,9 @@ Widget _incCard(incident) {
           future: _role == 'Client' ? IncService.getClosedIncbyUser(_email) : IncService.getAllClosedInc(),
           builder:(contaxt , snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting){
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(AppColors.PRIMARY_COLOR_DARK),
+              ));
             }else {
               return ListView.builder(
                 itemCount: snapshot.data.length,
