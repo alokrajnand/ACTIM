@@ -90,7 +90,7 @@ const links = await admin.firestore().collection('links').where('link_id', '==',
               secureConnection: false,
               port: 587,
               requireTLS:true,
-              auth: {user: 'admin@actoss.co.in',pass: 'Act@1242'},
+              auth: {user: '',pass: ''},
               tls: {ciphers: 'SSLv3'}
             });
 
