@@ -6,7 +6,6 @@ import 'package:actim/services/incident.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'createInc.dart';
 
 class RaisedInc extends StatefulWidget {
@@ -18,9 +17,8 @@ class _RaisedIncState extends State<RaisedInc> {
   String _messageToUser;
   String _role;
   String _email;
-  bool _success_ind = true ;
   bool _autovalidate = false;
-
+  bool _loading = false;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -64,39 +62,14 @@ Future getRole() async{
     );
 }
 
-
  ///Create a global key for the form
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   
-  void _success(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.green,
-            child: Text('Success'),
-          );
-        });
-  }
-
-  void _loading(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.yellow,
-            child: Text('Loading...'),
-          );
-        });
-  }
-
-
-
 Widget _validInvalid(incident_id){
   return Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    RaisedButton(
+                  children: <Widget>[     
+                   RaisedButton(
                       color: Colors.greenAccent,
                       child: const Text(
                         'Valid',
@@ -105,17 +78,13 @@ Widget _validInvalid(incident_id){
                             fontSize: 13,
                             color: AppColors.PRIMARY_COLOR_DARK),
                       ),
-                      onPressed: () {
-                        _loading(context);
-                      
-                      
+                      onPressed: () {                   
                       var doc_id;
                       var inc_id;
                       var _route_name;
                       var _user_email;
                       var _issue_desc;
-                      
-                      
+ 
                         firestore.collection('incidents').where('incident_id', isEqualTo: incident_id).get()
                         .then((data) {
                             doc_id = data.docs[0].id;
@@ -144,24 +113,16 @@ Widget _validInvalid(incident_id){
                             );       
                              /// Commit the batch
                              batch.commit().then((value) {
-                                _success(context);
-                                Future.delayed(Duration(seconds: 2), () {
                                      _navigateToHome(context);
-                                 });
                                  }).catchError((onError){
                                        print(onError);
                                    });
-
-
                         }).catchError((onError) {
                             print(onError);
-                        });
-
-                      
-
-                      
-                      }),
-                    SizedBox(width: 10),
+                        });                             
+                      }),          
+                    SizedBox(width: 10),                   
+       //// Invalidate the incident               
                     RaisedButton(
                       color: Colors.redAccent,
                       child: const Text(
@@ -178,7 +139,9 @@ Widget _validInvalid(incident_id){
                           ),
                         );
                       },
-                    ),
+                    )
+
+
                   ],
                 );
 }

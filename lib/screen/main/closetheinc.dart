@@ -3,7 +3,7 @@ import 'package:actim/screen/main/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CloseForIncScreen extends StatefulWidget {
   final  incident;
@@ -17,12 +17,13 @@ class CloseForIncScreen extends StatefulWidget {
 
 class _CloseForIncScreenState extends State<CloseForIncScreen> {
 
-String inc_close_comment;
+ String inc_close_comment;
  bool _success_ind = true;
  String _email;
  bool _autovalidate = false;
  DateTime currenttime = DateTime.now();
-
+ bool _loading = false;
+ String _errorMsg = '';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -43,30 +44,6 @@ Future getUserEmail() async{
       _email = _emailaddress;
     });
 }
-
-
-  
-  void _success(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.green,
-            child: Text('Success'),
-          );
-        });
-  }
-
-  void _loading(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.yellow,
-            child: Text('Loading...'),
-          );
-        });
-  }
 
 
     ///navigation to home
@@ -114,55 +91,49 @@ Future getUserEmail() async{
         child: Container(
           child: Form(
           key: _formKey,
-          autovalidate: _autovalidate,
+          //autovalidate: _autovalidate,
                   child: Column(
           children: <Widget>[
             SizedBox(height: 30),
             Text('Your are closing the incident - ' + widget.incident),
             SizedBox(height: 30),
-            _buildCloseComment(),
-            SizedBox(height: 30),
-            RaisedButton(
+            _buildCloseComment(),           
+            Text(_errorMsg, style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red),
+                      ),           
+            SizedBox(height: 30), 
+            _loading == false ?  RaisedButton(
                         color: AppColors.PRIMARY_COLOR_DARK,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
-                          child: 
-                          _success_ind == true ? 
+                              top: 15.0, bottom: 15.0, left: 120.0, right: 120.0),
+                          child:                       
                           Text(
                             'Submit',
                             style: TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
-                          )
-                          : Text(
-                            'Loading..',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900),
-                          )                     
-
+                          )                 
                         ),
                         onPressed: () async {
+                          setState(() {_errorMsg = '';});
                             if (!_formKey.currentState.validate()) {
                                 return;
                               }
+                           setState(() {_loading = true;});
                           _formKey.currentState.save();
-
-                                _loading(context) ;
-
                                                       var doc_id;
                                                       var inc_id;
                                                       var _route_name;
                                                       var _user_email;
                                                       var _issue_desc;
-                                                    
-                                                    
-                                                    firestore..collection('incidents').where('incident_id', isEqualTo: widget.incident)
+                                                                                           
+                                                    firestore.collection('incidents').where('incident_id', isEqualTo: widget.incident)
                                                       .get().then((data) { 
                                                         doc_id = data.docs[0].id;
                                                         inc_id = data.docs[0]['incident_id'];
@@ -192,23 +163,34 @@ Future getUserEmail() async{
                                                       
                                                                 }
                                                               );       
-
-                                                                                /// Commit the batch
-                                                                batch.commit().then((value) {
-                                                                    _success(context);
-                                                                Future.delayed(Duration(seconds: 1), () {
+                                                                batch.commit().then((value) {                                                                                                                
                                                                       _navigateToHome(context);
-                                                                });
+                                                                
                                                                 }).catchError((onError){
                                                                   print(onError);
+                                                                  setState(() {_errorMsg = 'Server Issue Contact Admin';});
+                                                                  setState(() {_loading = false;});
                                                                 });
  
                                                       }).catchError((error){
                                                         print(error);
+                                                        setState(() {_errorMsg = 'Server Issue Contact Admin';});
+                                                        setState(() {_loading = false;});
                                                       });                     
 
 
-                        })
+                        }): RaisedButton(
+                        color: AppColors.PRIMARY_COLOR_DARK,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
+                      child: SpinKitThreeBounce(color: Colors.white, size: 20.0,)
+                    ),
+                    onPressed: (){},
+                  )
+
            ]
            ),
         ),    

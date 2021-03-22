@@ -31,6 +31,8 @@ class _IncDetailScreenState extends State<IncDetailScreen> {
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
+ScrollController _scrollController = new ScrollController();
+
 
   Color getColor(name) {
     if (name == 'Open') {
@@ -48,6 +50,7 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
   void initState() {
     super.initState();
       getUser();
+      
   }
 
    getUser() async {
@@ -241,25 +244,35 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
                 decoration: InputDecoration.collapsed(
                   hintText: 'Send a message..',
                 ),
-                textCapitalization: TextCapitalization.sentences,
+                textCapitalization: TextCapitalization.sentences,                
                 onChanged: (String value) {
                   setState(() {
                     _textMessage = value;
                   });
-                }),
+                },
+                onTap: (){
+               
+            
+                },
+                ),
           ),
           IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
             color: Theme.of(context).primaryColor,
             onPressed: () {
+              _scrollController.animateTo(                
+                _scrollController.position.maxScrollExtent+500,
+                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 1),
+                );
 
               if (_textMessage != null){
-                 _controller.clear();
+                 _controller.clear(); 
+
               /// insert incident document in the database
-
               /// create a batch to load data -- message entry -- notification 
-
+                
               var batch = firestore.batch();
 
               batch.set(
@@ -286,17 +299,20 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 
                           /// Commit the batch
                           batch.commit().then((value) {
-                          print('success');
-
+                           setState(() { _textMessage = null;});
+                                _scrollController.animateTo(                
+                                _scrollController.position.maxScrollExtent+500,
+                                curve: Curves.easeOut,
+                                duration: const Duration(milliseconds: 1),
+                                );
                              }).catchError((onError){
                           print(onError);
                         });
-
-              }
-
-              
+              }             
             },
+
           ),
+
         ],
       ),
     );
@@ -360,8 +376,13 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
               stream: firestore.collection('incmessage').where('incident_id', isEqualTo: widget.incident['incident_id']).orderBy('msg_dt', descending: false).snapshots(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
-                  return ListView(
-                    children: snapshot.data.docs.map((document)=> _chatBubble(document)).toList()
+                  return Container(                    
+                    child: ListView(
+                      controller: _scrollController,
+                      ///reverse: true,
+                      //shrinkWrap: true,
+                      children: snapshot.data.docs.map((document)=> _chatBubble(document)).toList()
+                    ),
                   );
                 } else {
                   return Center(child: CircularProgressIndicator());

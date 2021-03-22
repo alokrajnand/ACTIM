@@ -156,7 +156,7 @@ Future loginuser( String _emailaddress , String _password) async{
         setState(() {
          _loading = false;
         _errorMsg = e.message;
-        print('ok');
+        ///print('ok');
       });
     }
 }
@@ -282,7 +282,6 @@ Future loginuser( String _emailaddress , String _password) async{
                         return;
                       }
                       _formKey.currentState.save();
-                      print(_loading);
                       FocusScope.of(context).requestFocus(FocusNode());
                               setState(() {_errorMsg = '';});
                               setState(() {_loading = true;});

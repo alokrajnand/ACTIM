@@ -1,14 +1,11 @@
 import 'package:actim/environment/theam.dart';
 import 'package:actim/screen/main/home.dart';
 import 'package:actim/screen/user/signin.dart';
-//import 'package:actim/screen/main/home.dart';
-//import 'package:actim/screen/user/signin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -27,6 +24,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String _passwordConfirmed;
   String _role = '';
   String _deviceToken;
+   bool _loading = false;
 ///
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -100,8 +98,8 @@ _firebaseMessaging.configure(
 ////// Signup Future 
 
 Future  signUpUser( String _emailaddress , String _password) async{
-    print(_emailaddress);
-    print(_password);
+    //print(_emailaddress);
+    //print(_password);
     try {
       UserCredential result  = await _auth.createUserWithEmailAndPassword(email: _emailaddress, password: _password);
       final UserCredential user = result;      
@@ -126,9 +124,8 @@ Future  signUpUser( String _emailaddress , String _password) async{
                             _navigateToSignIn();
                       });   
                 }catch (e) {
-                //print("Server issue please try After some time");
-                //print(e.message);
                     setState(() {
+                      _loading = false;
                       _errorMsg = e.message;
                     });
             }
@@ -137,12 +134,14 @@ Future  signUpUser( String _emailaddress , String _password) async{
             //print("An error occured while trying to send email verification");
             //print(e.message);
                     setState(() {
+                      _loading = false;
                       _errorMsg = e.message;
                     });
         }
     } catch (e) {
         print(e.message);
         setState(() {
+          _loading = false;
         _errorMsg = e.message;
       });
     }
@@ -273,8 +272,8 @@ Future  signUpUser( String _emailaddress , String _password) async{
                     )),                
                 
                 //submit button
-                SizedBox(height: 30),
-                RaisedButton(
+                SizedBox(height: 30),                
+                _loading == false ? RaisedButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5)),
                   child: Padding(
@@ -293,9 +292,20 @@ Future  signUpUser( String _emailaddress , String _password) async{
                       return;
                     }
                     _formKey.currentState.save();
+                    setState(() {_errorMsg = '';});
+                    setState(() {_loading = true;});
                     signUpUser(_emailaddress, _password);
                   },
-                ),
+                ): RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
+                      child: SpinKitThreeBounce(color: AppColors.PRIMARY_COLOR_DARK, size: 20.0,)
+                    ),
+                    onPressed: (){},
+                  ),
                 SizedBox(height: 30),
                 Divider(
                   thickness: 2,

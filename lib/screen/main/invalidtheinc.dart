@@ -3,7 +3,7 @@ import 'package:actim/screen/main/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class InvalidtheIncScreen extends StatefulWidget {
 
@@ -17,12 +17,12 @@ InvalidtheIncScreen({this.incident_id});
 
 class _InvalidtheIncScreenState extends State<InvalidtheIncScreen> {
   
-String inc_close_comment;
+ String inc_close_comment;
  bool _success_ind = true;
  String _email;
  bool _autovalidate = false;
  DateTime currenttime = DateTime.now();
-
+ bool _loading = false;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -45,28 +45,7 @@ Future getUserEmail() async{
 }
 
 
-  
-  void _success(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.green,
-            child: Text('Success'),
-          );
-        });
-  }
 
-  void _loading(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            color: Colors.yellow,
-            child: Text('Loading...'),
-          );
-        });
-  }
 
 
     ///navigation to home
@@ -118,11 +97,12 @@ Future getUserEmail() async{
                   child: Column(
           children: <Widget>[
             SizedBox(height: 30),
-            Text('Your are closing the incident - ' + widget.incident_id),
+            Text('Your are Marking this incident Invalid - ' + widget.incident_id),
             SizedBox(height: 30),
             _buildCloseComment(),
             SizedBox(height: 30),
-            RaisedButton(
+            
+            _loading == false ? RaisedButton(
                         color: AppColors.PRIMARY_COLOR_DARK,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
@@ -130,21 +110,13 @@ Future getUserEmail() async{
                           padding: const EdgeInsets.only(
                               top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
                           child: 
-                          _success_ind == true ? 
                           Text(
                             'Submit',
                             style: TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
-                          )
-                          : Text(
-                            'Loading..',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900),
-                          )                     
+                          )                   
 
                         ),
                         onPressed: () async {
@@ -152,7 +124,7 @@ Future getUserEmail() async{
                                 return;
                               }
                           _formKey.currentState.save();
-
+                          setState(() {_loading = true;}); 
                                 ///_loading(context) ;
                                                       // validInc(incident.id);
                                                       var doc_id;
@@ -197,7 +169,6 @@ Future getUserEmail() async{
                                                                                 
                                                                                 /// Commit the batch
                                                                 batch.commit().then((value) {
-                                                                    _success(context);
                                                                 Future.delayed(Duration(seconds: 2), () {
                                                                       _navigateToHome(context);
                                                                 });
@@ -210,6 +181,16 @@ Future getUserEmail() async{
                                                       });                     
 
 
+                        }):RaisedButton(
+                        color: AppColors.PRIMARY_COLOR_DARK,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15.0, bottom: 15.0, left: 50.0, right: 50.0),
+                              child: SpinKitThreeBounce(color: Colors.white, size: 20.0,) 
+                        ),
+                        onPressed: () {
                         })
            ]
            ),
